@@ -1,14 +1,10 @@
+var
+  assert = require('assert');
+
 var util = require('../../../lib/util');
-var asrt;
 var edbModule;
 
-if (typeof(window) === "undefined") {
-    asrt = require('assert');
-    edbModule = require("../../../index");
-} else {
-    asrt = assert;
-    edbModule = edbFactory;
-}
+edbModule = require("../../../index");
 
 var test_data = require('./../../testdata/testdata.json');
 
@@ -37,7 +33,6 @@ describe('TestNameReg', function () {
 
     it("should register an entry in the namereg", function (done) {
         this.timeout(6000);
-
         var input = test_data.SetEntry.input;
         var privKey = input.priv_key;
         var name = input.name;
@@ -45,11 +40,12 @@ describe('TestNameReg', function () {
         var numBlocks = input.numBlocks;
 
         var output = test_data.SetEntry.output;
-        edb.namereg().setEntry(privKey, name, data, numBlocks, function (error, data) {
-            asrt.ifError(error);
-            asrt.deepEqual(data, output, "output does not match expected");
+        edb.namereg().setEntry(privKey, name, data, numBlocks, function(error, data){
+            assert.ifError(error);
+            assert.deepEqual(data, output, "output does not match expected");
             done();
         });
+
     });
 
 });
