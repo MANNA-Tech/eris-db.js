@@ -40,10 +40,14 @@ describe('TestNameReg', function () {
         var numBlocks = input.numBlocks;
 
         var output = test_data.SetEntry.output;
-        edb.namereg().setEntry(privKey, name, data, numBlocks, function(error, data){
+        edb.namereg().setEntry(privKey, name, data, numBlocks, function(error){
             assert.ifError(error);
-            assert.deepEqual(data, output, "output does not match expected");
-            done();
+
+            edb.namereg().getEntry(name, function (error, entry) {
+              assert.ifError(error);
+              assert.equal(entry.data, data);
+              done();
+            });
         });
 
     });
