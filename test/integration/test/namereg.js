@@ -1,56 +1,41 @@
 var
-  assert = require('assert');
+  assert = require('assert'),
+  edbModule = require('../../../index'),
+  testData = require('../../testdata/testdata.json'),
+  util = require('../../../lib/util');
 
-var util = require('../../../lib/util');
-var edbModule;
+describe("name registry", function () {
+  it("should set and get an entry", function (done) {
+    var
+      requestData;
 
-edbModule = require("../../../index");
+    this.timeout(6 * 1000);
 
-var test_data = require('./../../testdata/testdata.json');
+    requestData = {
+      priv_validator: testData.chain_data.priv_validator,
+      genesis: testData.chain_data.genesis,
+      max_duration: 40
+    };
 
-var requestData = {
-    priv_validator: test_data.chain_data.priv_validator,
-    genesis: test_data.chain_data.genesis,
-    max_duration: 40
-};
+    util.getNewErisServer('http://localhost:1337/server', requestData, function (error, port) {
+      var
+        edb, privateKey, key, value, numberOfBlocks;
 
-var edb;
+      edb = edbModule.createInstance('http://localhost:' + port + '/rpc');
+      privateKey = '6B72D45EB65F619F11CE580C8CAED9E0BADC774E9C9C334687A65DCBAD2C4151CB3688B7561D488A2A4834E1AEE9398BEF94844D8BDBBCA980C11E3654A45906';
+      key = "testKey";
+      value = "testData";
+      numberOfBlocks = 250;
 
-var privKey = test_data.chain_data.priv_validator.priv_key[1];
-var input = "";
-var address;
+      edb.namereg().setEntry(privateKey, key, value, numberOfBlocks, function (error) {
+        assert.ifError(error);
 
-var serverServerURL = "http://localhost:1337/server";
-
-describe('TestNameReg', function () {
-
-    before(function (done) {
-        util.getNewErisServer(serverServerURL, requestData, function (error, port) {
-            edb = edbModule.createInstance("http://localhost:" + port + '/rpc');
-            done();
+        edb.namereg().getEntry(key, function (error, entry) {
+          assert.ifError(error);
+          assert.equal(entry.data, value);
+          done();
         });
+      });
     });
-
-    it("should register an entry in the namereg", function (done) {
-        this.timeout(6000);
-        var input = test_data.SetEntry.input;
-        var privKey = input.priv_key;
-        var name = input.name;
-        var data = input.data;
-        var numBlocks = input.numBlocks;
-
-        var output = test_data.SetEntry.output;
-        edb.namereg().setEntry(privKey, name, data, numBlocks, function(error){
-            assert.ifError(error);
-
-            edb.namereg().getEntry(name, function (error, entry) {
-              assert.ifError(error);
-              assert.equal(entry.data, data);
-              done();
-            });
-        });
-
-    });
-
+  });
 });
-
