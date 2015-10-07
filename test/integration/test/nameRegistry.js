@@ -1,8 +1,8 @@
 var
   assert = require('assert'),
+  child_process = require('child_process'),
   edbModule = require('../../../index'),
-  testData = require('../../testdata/testdata.json'),
-  util = require('../../../lib/util');
+  testData = require('../../testdata/testdata.json');
 
 describe("name registry", function () {
   it("should set and get an entry", function (done) {
@@ -17,12 +17,12 @@ describe("name registry", function () {
       max_duration: 40
     };
 
-    util.getNewErisServer('http://localhost:1337/server', requestData, function (error, port) {
+    child_process.exec('eris chains inspect blockchain NetworkSettings.IPAddress', function (error, stdout) {
       var
         edb, privateKey, key, value, numberOfBlocks;
 
-      edb = edbModule.createInstance('http://localhost:' + port + '/rpc');
-      privateKey = '6B72D45EB65F619F11CE580C8CAED9E0BADC774E9C9C334687A65DCBAD2C4151CB3688B7561D488A2A4834E1AEE9398BEF94844D8BDBBCA980C11E3654A45906';
+      edb = edbModule.createInstance('http://' + stdout.trim() + ':1337/rpc');
+      privateKey = require('../blockchain/priv_validator.json').priv_key[1];
       key = "testKey";
       value = "testData";
       numberOfBlocks = 250;

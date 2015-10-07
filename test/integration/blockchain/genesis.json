@@ -1,0 +1,29 @@
+{
+	"genesis_time": "Tue Oct 06 21:57:34.704105778 +0000 2015",
+	"chain_id": "blockchain",
+	"params": null,
+	"accounts": [
+		{
+			"address": "A9FB310D760126AA1EDBDD22F7657EABF19EDED8",
+			"amount": 2251799813685248,
+			"name": "",
+			"permissions": null
+		}
+	],
+	"validators": [
+		{
+			"pub_key": [
+				1,
+				"848345ADBEB07FD98B3D2693CF53968759A42BD118E45CE2F358F9162906E52A"
+			],
+			"amount": 1000,
+			"name": "",
+			"unbond_to": [
+				{
+					"address": "A9FB310D760126AA1EDBDD22F7657EABF19EDED8",
+					"amount": 1000
+				}
+			]
+		}
+	]
+}
