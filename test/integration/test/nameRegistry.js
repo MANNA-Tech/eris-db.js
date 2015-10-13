@@ -1,3 +1,5 @@
+'use strict';
+
 var
   assert = require('assert'),
   child_process = require('child_process'),
@@ -30,24 +32,34 @@ function erisDb(ipAddress, privateKey) {
 }
 
 describe("name registry", function () {
-  it("should set and get an entry", function (done) {
-    this.timeout(6 * 1000);
+  var
+    registry;
 
-    child_process.execAsync('eris chains inspect blockchain NetworkSettings.IPAddress').spread(function (stdout) {
+  this.timeout(60 * 1000);
+
+  before(function () {
+    return require('../before')().then(function (ipAddress) {
       var
-        privateKey, registry, key, value;
+        privateKey;
+
+      console.log("ipaddress", ipAddress);
 
       privateKey = require('../blockchain/priv_validator.json').priv_key[1];
-      key = "testKey";
-      value = "testValue";
+      registry = erisDb(ipAddress, privateKey).nameRegistry;
+    });
+  });
 
-      registry = erisDb(stdout.trim(), privateKey).nameRegistry;
+  it("should set and get an entry", function (done) {
+    var
+      key, value;
 
-      registry.setItem(key, value).then(function () {
-        registry.getItem(key).then(function (storedValue) {
-          assert.equal(storedValue, value);
-          done();
-        });
+    key = "testKey";
+    value = "testValue";
+
+    registry.setItem(key, value).then(function () {
+      registry.getItem(key).then(function (storedValue) {
+        assert.equal(storedValue, value);
+        done();
       });
     });
   });

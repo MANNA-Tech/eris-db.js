@@ -30,8 +30,5 @@ eris init --yes
 # eris-db.js doesn't work with eris-db 0.10.3.
 sed --in-place 's/0.10.3/0.10.2/' /home/eris/.eris/blockchains/default.toml
 
-eris chains new --genesis=blockchain/genesis.json --priv=blockchain/priv_validator.json --api --publish blockchain
-eris chains start blockchain
-
 echo "Type 'mocha' to run the tests."
 /bin/bash
