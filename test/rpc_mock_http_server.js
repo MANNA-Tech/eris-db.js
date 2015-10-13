@@ -6,7 +6,7 @@ var edbModule;
 
 if (typeof(window) === "undefined") {
     asrt = require('assert');
-    edbModule = require("../index");
+    edbModule = require("../lib/index");
 } else {
     asrt = assert;
     edbModule = edbFactory;

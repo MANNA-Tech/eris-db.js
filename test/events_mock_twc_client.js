@@ -11,7 +11,7 @@ if (typeof(window) === "undefined") {
 var testData = require('./testdata/testdata_mock.json');
 var template = require('./mock/test_template');
 var MockTwcClient = require('./mock/mock_twc_client');
-var erisdbFactory = require('../index');
+var erisdbFactory = require('../lib/index');
 
 var handlers = template.getHandlers(testData);
 var client = new MockTwcClient(handlers);

@@ -3,7 +3,7 @@
 var
   assert = require('assert'),
   child_process = require('child_process'),
-  edbModule = require('../../../index'),
+  edbModule = require('../../../lib/index'),
   Promise = require('bluebird');
 
 Promise.promisifyAll(child_process);
