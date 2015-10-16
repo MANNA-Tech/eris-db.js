@@ -17,6 +17,12 @@ module.exports = function () {
     && sleep 3 \
     && eris chains inspect blockchain NetworkSettings.IPAddress')
     .spread(function (stdout) {
-      return /.*\n(.*)\n/.exec(stdout)[1];
+      var
+        ipAddress, privateKey;
+
+      ipAddress = /.*\n(.*)\n/.exec(stdout)[1];
+      console.log("Created ErisDB test server at " + ipAddress + ".");
+      privateKey = require('./blockchain/priv_validator.json').priv_key[1];
+      return [ipAddress, privateKey];
     });
 };

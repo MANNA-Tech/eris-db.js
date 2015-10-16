@@ -13,39 +13,20 @@ if (typeof(window) === "undefined") {
     edbModule = edbFactory;
 }
 
-var serverServerURL = "http://localhost:1337/server";
-
 var test_data = require('./../../testdata/testdata.json');
 
-var requestData = {
-    priv_validator: test_data.chain_data.priv_validator,
-    genesis: test_data.chain_data.genesis,
-    max_duration: 30
-};
-
-var edb;
 var eventSub;
 
 describe('TheloniousHttpEvents', function () {
-
-    before(function (done) {
-        this.timeout(4000);
-
-        util.getNewErisServer(serverServerURL, requestData, function(err, port){
-            if(err){
-                throw err;
-            }
-            edb = edbModule.createInstance("http://localhost:" + port + '/rpc');
-            done();
-        })
-    });
-
     describe('.events', function () {
 
         describe('#subNewBlock', function () {
             it("should subscribe to new block events", function (done) {
-                this.timeout(6000);
-                edb.events().subNewBlocks(function (err, data) {
+              this.timeout(30 * 1000);
+
+              require('../createDb')().spread(function (ipAddress, privateKey) {
+                edbModule(ipAddress).then(function (edb) {
+                  edb.events().subNewBlocks(function (err, data) {
                     asrt.ifError(err, "New block subscription error.");
                     eventSub = data;
                     setTimeout(function () {
@@ -54,13 +35,15 @@ describe('TheloniousHttpEvents', function () {
                         })
                     }, 20000);
 
-                }, function(err, data){
-                    if(data){
-                        eventSub.stop(function(){
-                            done();
-                        });
-                    }
+                  }, function(err, data){
+                      if(data){
+                          eventSub.stop(function(){
+                              done();
+                          });
+                      }
+                  });
                 });
+              });
             });
         });
 

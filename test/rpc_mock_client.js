@@ -15,16 +15,21 @@ var erisdbFactory = require('../lib/index');
 
 var handlers = template.getHandlers(testData);
 var client = new MockClient(handlers);
-var edb = erisdbFactory.createInstanceFromClient(client, null);
-var tests = template.getTests(edb, testData);
 
 describe('eris-db', function () {
 
     describe("tests with mock rpc client", function () {
+      erisdbFactory(null, {client: client}).then(function (edb) {
+        var tests = template.getTests(edb, testData);
+
         tests.forEach(function (test) {
             it("should call " + test[0] + " successfully.", function (done) {
+              var
+                data, expected;
+
                 var f = test[1];
-                var expected = testData[test[0]].output;
+                data = testData[test[0]];
+                expected = data.expected === undefined ? data.output : data.expected;
                 if (test.length > 2) {
                     var args = test.slice(2);
                     args.push(check(expected, done));
@@ -32,8 +37,11 @@ describe('eris-db', function () {
                 } else {
                     f(check(expected, done));
                 }
+              });
             });
         });
+
+        it("should trick Mocha into not quitting before the dynamic tests are defined.", function () {});
     });
 
 });
@@ -46,8 +54,13 @@ function check(expected, done) {
         if (error) {
             console.log(error);
         }
-        asrt.ifError(error, "Failed to call rpc method.");
-        asrt.deepEqual(data, expected);
-        done();
-    };
+        try {
+          asrt.ifError(error, "Failed to call rpc method.");
+          asrt.deepEqual(data, expected);
+          done();
+        }
+        catch (exception) {
+          done(exception);
+        }
+      };
 }

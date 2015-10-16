@@ -15,12 +15,19 @@ var erisdbFactory = require('../lib/index');
 
 var handlers = template.getHandlers(testData);
 var client = new MockTwcClient(handlers);
-var edb = erisdbFactory.createInstanceFromClient(client, null);
+var edb;
 
 var testAddress = "75";
 
 // TODO update to use the appropriate event type for each sub once the test data update is done.
 describe('Event tests with mock rpc two-way client', function () {
+
+    before(function (done) {
+        erisdbFactory(null, {client: client}).then(function (db) {
+            edb = db;
+            done();
+        });
+    });
 
     describe('.subSolidityEvent', function () {
 
@@ -288,8 +295,13 @@ function check(expected, done, fieldModifiers) {
                 fieldModifiers[i](data);
             }
         }
-        asrt.ifError(error, "Failed to call rpc method.");
-        asrt.deepEqual(data, expected);
-        done();
+        try {
+          asrt.ifError(error, "Failed to call rpc method.");
+          asrt.deepEqual(data, expected);
+          done();
+        }
+        catch (exception) {
+          done(exception);
+        }
     };
 }

@@ -13,31 +13,25 @@ if (typeof(window) === "undefined") {
     edbModule = edbFactory;
 }
 
-var serverServerURL = "http://localhost:1337/server";
-
 var testData = require('./../../testdata/testdata.json');
-
-var requestData = {
-    priv_validator: testData.chain_data.priv_validator,
-    genesis: testData.chain_data.genesis,
-    max_duration: 10
-};
 
 var edb;
 
 describe('ErisDbHttp', function () {
+  var
+    privateKey;
+
+    this.timeout(30 * 1000);
 
     before(function (done) {
-        this.timeout(4000);
-
-        util.getNewErisServer(serverServerURL, requestData, function(err, port){
-            if(err){
-                throw new Error(err);
-            }
-            edb = edbModule.createInstance("http://localhost:" + port + '/rpc');
-            console.time("http");
-            done();
-        })
+      require('../createDb')().spread(function (ipAddress, key) {
+        edbModule(ipAddress).then(function (db) {
+          edb = db;
+          privateKey = key;
+          console.time("http");
+          done();
+        });
+      });
     });
 
     after(function(){
@@ -114,7 +108,7 @@ describe('ErisDbHttp', function () {
             it("should send a contract create tx to an address", function (done) {
                 var tx_create = testData.TransactCreate.input;
                 var exp = testData.TransactCreate.output;
-                edb.txs().transact(tx_create.priv_key, tx_create.address, tx_create.data,
+                edb.txs().transact(privateKey, tx_create.address, tx_create.data,
                     tx_create.gas_limit, tx_create.fee, null, check(exp, done));
             });
         });
@@ -123,7 +117,7 @@ describe('ErisDbHttp', function () {
             it("should transact with the account at the given address", function (done) {
                 var tx = testData.Transact.input;
                 var exp = testData.Transact.output;
-                edb.txs().transact(tx.priv_key, tx.address, tx.data, tx.gas_limit, tx.fee,
+                edb.txs().transact(privateKey, tx.address, tx.data, tx.gas_limit, tx.fee,
                     null, check(exp, done));
             });
         });
@@ -244,9 +238,14 @@ function check(expected, done, fieldModifiers) {
                 fieldModifiers[i](data);
             }
         }
-        asrt.ifError(error, "Failed to call rpc method.");
-        asrt.deepEqual(data, expected);
-        done();
+        try {
+          asrt.ifError(error, "Failed to call rpc method.");
+          asrt.deepEqual(data, expected);
+          done();
+        }
+        catch (exception) {
+          done(exception);
+        }
     };
 }
 

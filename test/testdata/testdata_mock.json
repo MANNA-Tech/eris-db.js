@@ -425,7 +425,8 @@
       "name": "testKey",
       "owner": "37236DF251AB70022B1DA351F08A20FB52443E37",
       "data": "testData",
-      "expires": 250 }
+      "expires": 250 },
+    "expected": "testData"
   },
   "GetNameRegEntries": {
     "input": {

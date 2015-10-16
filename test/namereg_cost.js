@@ -1,4 +1,4 @@
-var nameregModule = require('../lib/namereg');
+var nameregModule = require('../lib/nameRegistry');
 var namereg = new nameregModule.createInstance();
 
 var asrt;

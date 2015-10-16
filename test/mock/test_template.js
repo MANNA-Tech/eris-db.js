@@ -70,9 +70,9 @@ exports.getTests = function(edb, testData) {
     tests.push(["GetUnconfirmedTxs", txs.getUnconfirmedTxs.bind(txs)]);
 
     // NameReg
-    var nr = edb.namereg();
+    var nr = edb.nameRegistry;
     tests.push(["GetNameRegEntries", nr.getEntries.bind(nr)]);
-    tests.push(["GetNameRegEntry", nr.getEntry.bind(nr), testData.GetNameRegEntry.input.name]);
+    tests.push(["GetNameRegEntry", function (key, callback) { return nr.getItem(key).nodeify(callback); }, testData.GetNameRegEntry.input.name]);
 
     // TODO test locally signed data before that is added to stack.
 
