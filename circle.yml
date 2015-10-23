@@ -1,3 +1,23 @@
 machine:
+  environment:
+    REPO: ${HOME}/${CIRCLE_PROJECT_REPONAME}
+    BUILD_SCRIPT: npm test
+    INTEGRATION_TESTS_BRANCH: staging
+    INTEGRATION_TESTS_PATH: $HOME/integration-tests
+    DOCKER_VERSION: 1.8.2
+    DOCKER_MACHINE_VERSION: 0.4.0
+
   node:
     version: 0.12.0
+
+dependencies:
+  override:
+    - sudo curl -L -o /usr/bin/docker http://s3-external-1.amazonaws.com/circle-downloads/docker-$DOCKER_VERSION-circleci; chmod 0755 /usr/bin/docker; true
+    - sudo service docker start
+    - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS quay.io
+    - "sudo curl -sSL -o /usr/local/bin/docker-machine https://github.com/docker/machine/releases/download/v$DOCKER_MACHINE_VERSION/docker-machine_linux-amd64 && sudo chmod +x /usr/local/bin/docker-machine"
+
+test:
+  override:
+    - git clone https://github.com/eris-ltd/integration-tests $HOME/integration-tests
+    - bash $INTEGRATION_TESTS_PATH/test.sh $MACHINE_NAME
