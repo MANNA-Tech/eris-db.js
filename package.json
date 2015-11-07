@@ -1,6 +1,6 @@
 {
   "name": "eris-db",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "main": "lib/index.js",
   "dependencies": {
     "bluebird": "^2.10.2",

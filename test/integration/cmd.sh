@@ -27,8 +27,5 @@ fi
 
 eris init --yes
 
-# eris-db.js doesn't work with eris-db 0.10.3.
-sed --in-place 's/0.10.3/0.10.2/' /home/eris/.eris/blockchains/default.toml
-
 echo "Type 'mocha' to run the tests."
 /bin/bash
