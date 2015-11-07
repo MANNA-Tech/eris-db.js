@@ -186,13 +186,7 @@ There are two types of calls. `Call` takes a data string and an account address 
 ## Tests
 
 For unit tests, run `npm test`.
-
-For integration tests:
-
-```shell
-$ cd test/integration
-$ ./test.sh
-```
+For integration tests, run `npm run integration`.
 
 ## Documentation
 
