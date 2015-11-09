@@ -11,7 +11,8 @@ describe("name registry", function () {
 
     require('../createDb')().spread(function (ipAddress, privateKey) {
       erisDb(ipAddress, {privateKey: privateKey}).then(function (db) {
-        db.nameRegistry.setItem("key", "value").then(function () {
+        // Wait 2 seconds for the value to be set before getting it.
+        db.nameRegistry.setItem("key", "value").delay(2000).then(function () {
           db.nameRegistry.getItem("key").then(function (storedValue) {
             assert.equal(storedValue, "value");
             done();
