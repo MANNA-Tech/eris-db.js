@@ -1,41 +1,34 @@
-# erisdb-js (Alpha)
+# Eris-DB.js
 
-This is a JavaScript API for communicating with a [ErisDB](https://github.com/eris-ltd/eris-db) server.
+This is the JavaScript API for communicating with an [Eris DB](https://github.com/eris-ltd/eris-db) server.
 
 ## Installation
 
 ```shell
-$ npm install eris-db
+$ npm install --save eris-db
 ```
 
 ## Usage
 
-If you created an ErisDB server using the [Eris CLI](https://github.com/eris-ltd/eris-cli) tool, you can find out its IP address using the following command:
+If you created an Eris DB server using the [Eris CLI](https://github.com/eris-ltd/eris-cli) tool you can find out its IP address using the following command:
 
 ```
-$ eris chains inspect <name of ErisDB server> NetworkSettings.IPAddress
+$ eris chains inspect <name of Eris DB server> NetworkSettings.IPAddress
 ```
 
-You can then give the IP address to the JavaScript library to get a `db` object for communicating with the server like this:
+You can then give the IP address to the JavaScript library to get a `db` object for communicating with the server:
 
-```
-var erisDb = require('eris-db');
+```JavaScript
+var
+  erisDb = require('eris-db');
 
-erisDb('192.0.2.1').then(function (db) {
-	// Use the db object here to communicate with the ErisDB server.
+erisDb.open('192.0.2.1').then(function (db) {
+  db.blockchain.getInfo().then(function (info) {
+    console.log(info);
+    db.close();
+  });
 });
-
 ```
-
-### WebSocket
-
-The websocket-client has a number of additional connection-related methods:
-
-`WebSocketClient.shutDown(callback)` - Technically this method is available in all clients but does not do anything with the http client. If called on an edb instance with a websocket client (or on the client directly), it will invoke the zero-argument callback function when the socket has been terminated.
-
-`WebSocketClient.reconnect(callback)` - Will terminate the current connection (if any), and establish a new one. Same callback as with `start` (`callback(error)`).
-
-`WebSocketClient.setCloseCallback(callback)` - If this zero-argument callback is set, it will be invoked when the active connection is closed. The callback will remain until it is set to `null`. Note that it will also be called when reconnecting if there was an already active connection (since that connection will be closed).
 
 ## API Reference
 
@@ -50,10 +43,10 @@ NOTE: There will be links to the proper jsdoc and integration with erisindustrie
 | Component Name | Accessor |
 | :------------- | :------- |
 | Accounts | [ErisDB.accounts()](https://github.com/eris-ltd/erisdb-js/blob/master/lib/accounts.js) |
-| Blockchain | [ErisDB.blockchain()](https://github.com/eris-ltd/erisdb-js/blob/master/lib/blockchain.js) |
+| Blockchain | [ErisDB.blockchain](https://github.com/eris-ltd/erisdb-js/blob/master/lib/blockchain.js) |
 | Consensus | [ErisDB.consensus()](https://github.com/eris-ltd/erisdb-js/blob/master/lib/consensus.js) |
 | Events | [ErisDB.events()](https://github.com/eris-ltd/erisdb-js/blob/master/lib/events.js) |
-| NameReg | [ErisDB.namereg()](https://github.com/eris-ltd/erisdb-js/blob/master/lib/namereg.js) |
+| Name Registry | [ErisDB.nameRegistry](https://github.com/eris-ltd/erisdb-js/blob/master/lib/namereg.js) |
 | Network | [ErisDB.network()](https://github.com/eris-ltd/erisdb-js/blob/master/lib/network.js) |
 | Transactions | [ErisDB.txs()](https://github.com/eris-ltd/erisdb-js/blob/master/lib/transactions.js) |
 
@@ -130,14 +123,14 @@ The `eventCallback` data is the event object. This object is different depending
 
 `subSolidityEvent` and `subLogEvent` are two different names for the same type of subscription (log events).
 
-#### NameReg 
+#### Name Registry 
 
-The NameReg object has methods for accessing the name registry.
+The name registry object has methods for accessing the name registry.
 
 | Method | RPC method | Notes |
 | :----- | :--------- | :---- |
-| NameReg.getEntry | [erisdb.getNameRegEntry](https://github.com/eris-ltd/eris-db/blob/master/api.md#get-namereg-entry) | |
-| NameReg.getEntries | [erisdb.getNameRegEntries](https://github.com/eris-ltd/eris-db/blob/master/api.md#get-namereg-entries) | |
+| nameRegistry.getItem | [erisdb.getNameRegEntry](https://github.com/eris-ltd/eris-db/blob/master/api.md#get-namereg-entry) | |
+| nameRegistry.getEntries | [erisdb.getNameRegEntries](https://github.com/eris-ltd/eris-db/blob/master/api.md#get-namereg-entries) | |
 
 #### Network
 
@@ -191,10 +184,6 @@ For integration tests, run `npm run integration`.
 ## Documentation
 
 Generate documentation using the command `npm run doc`.
-
-## Browser
-
-This library will be possible to run from a web-browser at some point.
 
 ## Copyright
 
