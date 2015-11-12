@@ -23,8 +23,8 @@ exports.getTests = function(edb, testData) {
     tests.push(["GetStorageAt", accounts.getStorageAt.bind(accounts), storageAt.address, storageAt.key]);
 
     // Blockchain
-    var bc = edb.blockchain();
-    tests.push(["GetBlockchainInfo", bc.getInfo.bind(bc)]);
+    var bc = edb.blockchain;
+    tests.push(["GetBlockchainInfo", function (callback) { return bc.getInfo().nodeify(callback); }]);
     tests.push(["GetChainId", bc.getChainId.bind(bc)]);
     tests.push(["GetGenesisHash", bc.getGenesisHash.bind(bc)]);
     tests.push(["GetLatestBlock", bc.getLatestBlock.bind(bc)]);
