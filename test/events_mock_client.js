@@ -22,7 +22,7 @@ var testAddress = "75";
 // TODO update to use the appropriate event type for each sub once the test data update is done.
 describe('Event tests with mock rpc client', function () {
     before(function (done) {
-      erisdbFactory(null, {client: client}).then(function (db) {
+      erisdbFactory.open(null, {client: client}).then(function (db) {
         edb = db;
 
         // We don't want to wait a full second for poll to be called.

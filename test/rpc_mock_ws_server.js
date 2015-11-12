@@ -25,7 +25,7 @@ var tests;
 
 describe("eris-db", function () {
 
-    edbModule("localhost").then(function (edb) {
+    edbModule.open("localhost").then(function (edb) {
         describe("tests with mock rpc server over websocket", function () {
             tests = template.getTests(edb, testData);
 

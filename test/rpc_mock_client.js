@@ -19,7 +19,7 @@ var client = new MockClient(handlers);
 describe('eris-db', function () {
 
     describe("tests with mock rpc client", function () {
-      erisdbFactory(null, {client: client}).then(function (edb) {
+      erisdbFactory.open(null, {client: client}).then(function (edb) {
         var tests = template.getTests(edb, testData);
 
         tests.forEach(function (test) {

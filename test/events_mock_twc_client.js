@@ -23,7 +23,7 @@ var testAddress = "75";
 describe('Event tests with mock rpc two-way client', function () {
 
     before(function (done) {
-        erisdbFactory(null, {client: client}).then(function (db) {
+        erisdbFactory.open(null, {client: client}).then(function (db) {
             edb = db;
             done();
         });
