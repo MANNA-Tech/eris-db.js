@@ -2,30 +2,35 @@
  */
 // TODO break all the standard tests out into one file, then use them in all mock tests + these ones.
 var util = require('../../../lib/util');
-var asrt;
-var edbModule;
-
-if (typeof(window) === "undefined") {
-    asrt = require('assert');
-    edbModule = require("../../../lib/index");
-} else {
-    asrt = assert;
-    edbModule = edbFactory;
-}
+var assert = require('assert');
+var edbModule = require("../../../lib/index"),
+    _ = require('lodash');
 
 var testData = require('./../../testdata/testdata.json');
 
 var edb;
 
+function hasKeys(object, keys) {
+    return keys.every(_.curry(_.has)(object));
+}
+
+function assertHasKeys(keys, done) {
+    return function (error, response) {
+        assert.ifError(error);
+        assert(hasKeys(response, keys));
+        done();
+    };
+}
+
 describe('ErisDbHttp', function () {
   var
     privateKey;
 
-    this.timeout(30 * 1000);
-
     before(function (done) {
+      this.timeout(30 * 1000);
+
       require('../createDb')().spread(function (ipAddress, key) {
-        edbModule(ipAddress).then(function (db) {
+        edbModule.open(ipAddress).then(function (db) {
           edb = db;
           privateKey = key;
           console.time("http");
@@ -42,15 +47,16 @@ describe('ErisDbHttp', function () {
 
         describe('#getState', function () {
             it("should get the consensus state", function (done) {
-                var exp = testData.GetConsensusState.output;
-                edb.consensus().getState(check(exp, done, [modifyConsensusStartTime]));
+                edb.consensus().getState(assertHasKeys(['height', 'round',
+                    'step', 'start_time', 'commit_time', 'validators',
+                    'proposal'], done));
             });
         });
 
         describe('#getValidators', function () {
             it("should get the validators", function (done) {
-                var exp = testData.GetValidators.output;
-                edb.consensus().getValidators(check(exp, done));
+                edb.consensus().getValidators(assertHasKeys(['block_height',
+                    'bonded_validators', 'unbonding_validators'], done));
             });
         });
 
@@ -59,9 +65,9 @@ describe('ErisDbHttp', function () {
     describe('.network', function () {
 
         describe('#getInfo', function () {
-            var exp = testData.GetNetworkInfo.output;
             it("should get the network info", function (done) {
-                edb.network().getInfo(check(exp, done));
+                edb.network().getInfo(assertHasKeys(['client_version',
+                    'moniker', 'listening', 'listeners', 'peers'], done));
             });
         });
 
@@ -73,23 +79,28 @@ describe('ErisDbHttp', function () {
         });
 
         describe('#getMoniker', function () {
-            var exp = testData.GetMoniker.output;
             it("should get the moniker", function (done) {
-                edb.network().getMoniker(check(exp, done));
+                edb.network().getMoniker(assertHasKeys(['moniker'], done));
             });
         });
 
         describe('#isListening', function () {
             it("should get the listening value", function (done) {
-                var exp = testData.IsListening.output;
-                edb.network().isListening(check(exp, done));
+                edb.network().isListening(function (error, response) {
+                    assert.ifError(error);
+                    assert(response.listening);
+                    done();
+                });
             });
         });
 
         describe('#getListeners', function () {
             it("should get the listeners", function (done) {
-                var exp = testData.GetListeners.output;
-                edb.network().getListeners(check(exp, done));
+                edb.network().getListeners(function (error, response) {
+                    assert.ifError(error);
+                    assert(response.listeners.length > 0);
+                    done();
+                });
             });
         });
 
@@ -187,37 +198,37 @@ describe('ErisDbHttp', function () {
     describe('.blockchain', function () {
 
         describe('#getInfo', function () {
-            it("should get the blockchain info", function (done) {
+            it("should get the blockchain info", function () {
                 var exp = testData.GetBlockchainInfo.output;
-                edb.blockchain().getInfo(check(exp, done));
+                return edb.blockchain.getInfo(check(exp));
             });
         });
 
         describe('#getChainId', function () {
             it("should get the chain id", function (done) {
                 var exp = testData.GetChainId.output;
-                edb.blockchain().getChainId(check(exp, done));
+                edb.blockchain.getChainId(check(exp, done));
             });
         });
 
         describe('#getGenesisHash', function () {
             var exp = testData.GetGenesisHash.output;
             it("should get the genesis hash", function (done) {
-                edb.blockchain().getGenesisHash(check(exp, done));
+                edb.blockchain.getGenesisHash(check(exp, done));
             });
         });
 
         describe('#getLatestBlockHeight', function () {
             it("should get the latest block height", function (done) {
                 var exp = testData.GetLatestBlockHeight.output;
-                edb.blockchain().getLatestBlockHeight(check(exp, done));
+                edb.blockchain.getLatestBlockHeight(check(exp, done));
             });
         });
 
         describe('#getBlocks', function () {
             it("should get the blocks between min, and max height", function (done) {
                 var exp = testData.GetBlocks.output;
-                edb.blockchain().getBlocks(check(exp, done));
+                edb.blockchain.getBlocks(check(exp, done));
             });
         });
 
@@ -239,18 +250,14 @@ function check(expected, done, fieldModifiers) {
             }
         }
         try {
-          asrt.ifError(error, "Failed to call rpc method.");
-          asrt.deepEqual(data, expected);
+          assert.ifError(error, "Failed to call rpc method.");
+          assert.deepEqual(data, expected);
           done();
         }
         catch (exception) {
           done(exception);
         }
     };
-}
-
-function modifyConsensusStartTime(cs){
-    cs["start_time"] = "";
 }
 
 function modifyPrivateAccount(pa){
