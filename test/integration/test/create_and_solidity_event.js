@@ -22,7 +22,7 @@ describe('HttpCreateAndSolidityEvent', function () {
         this.timeout(30 * 1000);
 
         require('../createDb')().spread(function (ipAddress, privateKey) {
-          edbModule(ipAddress).then(function (edb) {
+          edbModule.open(ipAddress).then(function (edb) {
 
             var expected = {
               address: '0000000000000000000000009FC1ECFCAE2A554D4D1A000D0D80F748E66359E3',

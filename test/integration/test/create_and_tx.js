@@ -22,7 +22,7 @@ describe('HttpCreateAndTx', function () {
         this.timeout(30 * 1000);
 
         require('../createDb')().spread(function (ipAddress, privateKey) {
-          edbModule(ipAddress).then(function (edb) {
+          edbModule.open(ipAddress).then(function (edb) {
             edb.txs().transactAndHold(privateKey, "", compiled, 100000, 0, null, function (error, data) {
               asrt.ifError(error);
               address = data.call_data.callee;
