@@ -16,7 +16,10 @@
   "scripts": {
     "predoc": "npm install && rm -rf doc",
     "doc": "jsdoc --configure 'JSDoc configuration.json' --template node_modules/ink-docstrap/template index.js lib/*.js lib/rpc/*.js README.md --destination doc",
-    "test": "mocha"
+    "test": "mocha",
+    "preintegration": "npm install",
+    "integration": "cd test/integration && ./test.sh"
+
   },
   "repository": {
     "type": "git",
